@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR&family=Noto+Sans+KR:wght@100..900&display=swap');
 
 * {
-  font-family: "Nanum Pen Script", cursive;
+  font-family: "IBM Plex Sans KR ", sans-serif;
 }

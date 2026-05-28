@@ -1,19 +1,30 @@
 <div class="my-5">
     <h1 class="text-center mb-5">게시판</h1>
-    <table id="tbl" class="table table-striped table-hover"></table>
-    <div>
-        <button id="prev" class="btn btn-primary btn-sm px-3">이전</button>
-        <span id="span_page">1/10</span>
-        <button id="next" class="btn btn-primary btn-sm px-3">다음</button>
+
+    
+
+    <table id="tbl" class="table table-bordered table-hover"></table>
+    <div class="text-center">
+        <button class="btn btn-link btn-prev">이전</button>
+        <span class="page_info px-3">1/10</span>
+        <button class="btn btn-link btn-next">다음</button>
     </div>
     <script id="temp" type="text/x-handlebars-template">
+        <thead class="text-center">
+            <tr>
+                <td>번호</td>
+                <td>제목</td>
+                <td>작성자</td>
+                <td>작성일</td>
+            </tr>
+        </thead>
         <tbody>
             {{#each .}}
             <tr>
                 <td>{{ID}}</td>
                 <td>{{TITLE}}</td>
-                <td>{{SNAME}}{{WRITER}}</td>
-                <td>{{REG_DATE}}</td>
+                <td>{{SNAME}}</td>
+                <td>{{FMT_DATE}}</td>
             </tr>
             {{/each}}
         </tbody>
@@ -24,36 +35,35 @@
     let size=5;
     getList();
 
-    $("#next").on("click", function(){
-        page++;
+    $(".btn-prev").on("click", function(){
+        page--;
         getList();
     });
-
-    $("#prev").on("click", function(){
-        page--;
+    $(".btn-next").on("click", function(){
+        page++;
         getList();
     });
 
     function getList(){
         $.ajax({
-            type:"get",
-            url:"posts/list.json",
+             type:"get",
+            url:"/posts/list.json",
             data:{page, size},
             success:function(data){
                 console.log(data);
                 const temp=Handlebars.compile($("#temp").html());
                 $("#tbl").html(temp(data.list));
-                $("#span_page").html(`${page}`);
 
-                if(page==1) $("#prev").attr("disabled", true);
-                else $("#prev").attr("disabled", false);
-                
                 const last = Math.ceil(data.count/size);
-                $("#span_page").html(`${page}/${last}`);
+                $(".page_info").html(`${page}/${last}`); //페이지 변경 동적 표기
 
-                if(page==last) $("#next").attr("disabled", true);
-                else $("#next").attr("disabled", false);
+                if(page==1) $(".btn-prev").attr("disabled", "true"); 
+                else $(".btn-prev").attr("disabled", false);
+                if(page==last) $(".btn-next").attr("disabled", "true");
+                else $(".btn-next").attr("disabled", false);
+
+
             }
-        });
+        })
     }
 </script>

@@ -9,6 +9,38 @@ router.get('/', function(req, res, next) {
 });
 
 
+//게시글 목록 데이터 브라우저: /posts/list.json?page=1&size=5
+router.get('/list.json', async function(req, res){
+    let page = parseInt(req.query.page) || 1;
+    let size = parseInt(req.query.size) || 5;
+    let off_rows = (page-1) * size;
+    let con;
+    try{
+        con = await getConnection();
+
+        let sql="SELECT * FROM VIEW_POSTS";
+            sql+="  ORDER BY ID DESC";
+            sql+=` OFFSET ${off_rows} ROWS FETCH NEXT ${size} ROWS ONLY`;
+        let result = await con.execute(sql, {}, {outFormat:oracledb.OUT_FORMAT_OBJECT});
+        let list = result.rows;
+        
+        sql = "select count(*) from view_posts";
+        result = await con.execute(sql);
+        let count=result.rows[0][0];
+
+        res.send({list, count});
+    }catch(err){
+        console.log('게시글 목록 데이터', err.message)
+    }finally{
+        if(con) await con.close();
+    }
+});
+
+module.exports = router;
+
+
+
+/*
 //게시글 목록 데이터
 router.get('/list.json', async function(req, res){
     let con;
@@ -35,3 +67,4 @@ router.get('/list.json', async function(req, res){
 });
 
 module.exports = router;
+*/
