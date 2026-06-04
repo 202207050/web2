@@ -1,7 +1,16 @@
 <div class="my-5">
     <h1 class="text-center mb-5">게시판</h1>
-
-    
+    <div class="row">
+        <div class="col-8 col-md-6 col-lg-4 mb-2">
+           <form name="frm" class="input-group">
+                <input name="word" class="form-control" placeholder="작성자, 제목, 내용">
+                <button class="btn btn-success">검색</button>
+           </form> 
+        </div>
+        <div class="col text-end">
+            <button class="btn btn-link" id="btn-write">글쓰기</button>
+        </div>
+    </div>
 
     <table id="tbl" class="table table-bordered table-hover"></table>
     <div class="text-center">
@@ -9,6 +18,7 @@
         <span class="page_info px-3">1/10</span>
         <button class="btn btn-link btn-next">다음</button>
     </div>
+
     <script id="temp" type="text/x-handlebars-template">
         <thead class="text-center">
             <tr>
@@ -30,10 +40,27 @@
         </tbody>
     </script>
 </div>
+
 <script>
     let page=1;
-    let size=5;
+    let size=10;
+    let word="";
     getList();
+
+    $("#btn-write").on("click", function(){
+        if(scode){
+            location.href="/posts/insert";
+        }else{
+            sessionStorage.setItem("target", "/posts/insert");
+            location.href="/users/login";
+        }
+    });
+    $(frm).on("submit", function(e){
+        e.preventDefault();
+        word = $(frm.word).val();
+        page=1;
+        getList();
+    });
 
     $(".btn-prev").on("click", function(){
         page--;
@@ -48,7 +75,7 @@
         $.ajax({
              type:"get",
             url:"/posts/list.json",
-            data:{page, size},
+            data:{page, size, word},
             success:function(data){
                 console.log(data);
                 const temp=Handlebars.compile($("#temp").html());
@@ -62,7 +89,8 @@
                 if(page==last) $(".btn-next").attr("disabled", "true");
                 else $(".btn-next").attr("disabled", false);
 
-
+                if(last > 1) $("#pagination").show();
+                else $("#pagination").hide();
             }
         })
     }
